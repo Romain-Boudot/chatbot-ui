@@ -30,17 +30,14 @@ async function getModels(url: string, type: 'openai' | 'azure' | 'llama', apiKey
   });
 
   if (response.status === 401) {
-    console.error(`${type} API authentication error ${response.status}: ${await response.text()}`);
+    // console.error(`${type} API authentication error ${response.status}: ${await response.text()}`);
     throw new Error('OpenAI API returned an error');
   } else if (response.status !== 200) {
-    console.error(`${type} API returned an error ${response.status}: ${await response.text()}`);
+    // console.error(`${type} API returned an error ${response.status}: ${await response.text()}`);
     throw new Error('OpenAI API returned an error');
   }
 
-  const data = (await response.json())?.data
-  // console.log('data', data)
-
-  return data;
+  return (await response.json())?.data;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -62,8 +59,6 @@ const handler = async (req: Request): Promise<Response> => {
         ? OpenAIModels[model_id]
         : OpenAIModels[model_id] || {...OpenAIModels[OpenAIModelID.ANY_LLAMA], name: model_name, id: model_id} as OpenAIModel
     }).filter(Boolean);
-
-    console.log('models', models);
 
     return new Response(JSON.stringify(models), { status: 200 });
   } catch (error) {

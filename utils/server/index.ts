@@ -38,11 +38,12 @@ export const OpenAIStream = async (
   if (OPENAI_API_TYPE === 'azure') {
     url = `${OPENAI_API_HOST}/openai/deployments/${AZURE_DEPLOYMENT_ID}/chat/completions?api-version=${OPENAI_API_VERSION}`;
   }
-  const streaming = model.url !== LLAMA_API_HOST || (LLAMA_STREAM_MODE === '1');
+  const isLlama = model.url === LLAMA_API_HOST;
+  const streaming = !isLlama || (LLAMA_STREAM_MODE === '1');
   const res = await fetch(url, {
     headers: {
       'Content-Type': 'application/json',
-      ...(OPENAI_API_TYPE === 'openai' && {
+      ...(OPENAI_API_TYPE === 'openai' && !isLlama && {
         Authorization: `Bearer ${key ? key : process.env.OPENAI_API_KEY}`
       }),
       ...(OPENAI_API_TYPE === 'azure' && {
@@ -66,9 +67,6 @@ export const OpenAIStream = async (
       temperature: temperature,
       stream: streaming,
     }),
-  }).catch((e) => {
-    console.error('c\'est oui', url);
-    throw e;
   });
 
   const encoder = new TextEncoder();

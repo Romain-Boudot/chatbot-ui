@@ -190,11 +190,14 @@ const Home = ({
         name: OpenAIModels[defaultModelId].name,
         maxLength: OpenAIModels[defaultModelId].maxLength,
         tokenLimit: OpenAIModels[defaultModelId].tokenLimit,
+        url: OpenAIModels[defaultModelId].url,
       },
       prompt: DEFAULT_SYSTEM_PROMPT,
       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
     };
+
+    console.log(lastConversation, newConversation)
 
     const updatedConversations = [...conversations, newConversation];
 
@@ -396,13 +399,9 @@ const Home = ({
 export default Home;
 
 export const getServerSideProps: GetServerSideProps = async ({ locale }) => {
-  const defaultModelId =
-    (process.env.DEFAULT_MODEL &&
-      Object.values(OpenAIModelID).includes(
-        process.env.DEFAULT_MODEL as OpenAIModelID,
-      ) &&
-      process.env.DEFAULT_MODEL) ||
-    fallbackModelID;
+  const defaultModelId = process.env.DEFAULT_MODEL || fallbackModelID;
+
+  console.log('defaultModelId', defaultModelId);
 
   let serverSidePluginKeysSet = false;
 
